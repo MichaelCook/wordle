@@ -1,4 +1,4 @@
-# wordl
+# wordle
 Suggest guesses for Wordle.
 
 Specify what you've tried so far and this script tells you the best words to
@@ -7,7 +7,7 @@ try next.
 Example:
 
 ```
-$ wordle --help
+$ ./wordle --help
 usage: wordle [-h] [attempts ...]
 
 Suggest Wordle guesses
