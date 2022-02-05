@@ -33,3 +33,20 @@ $
 
 The number in the first column is the "score" for that word.
 A higher number means the word is more likely to be right.
+
+The ten best words to start with:
+
+```
+$ ./wordle | head
+ 1437 slate
+ 1411 sauce
+ 1409 slice
+ 1403 shale
+ 1398 saute
+ 1393 share
+ 1392 sooty
+ 1382 shine
+ 1381 suite
+ 1378 crane
+$
+```
