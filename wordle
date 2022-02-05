@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import argparse
-from distutils.log import debug
 import re
 from enum import Enum
 from typing import Final, Set, List, Tuple
@@ -249,12 +248,12 @@ def word_score(word: str, position_letter_scores: List[List[int]]) -> int:
                for i, letter in enumerate(word))
 
 def possible_word(word: str, attempt: Attempt) -> bool:
-    debug = word == 'zzzzz'   # replace with the five-letter lowercase word you want to debug
+    debug = word == 'zzzzz'   # the word whose analysis to debug
     assert len(word) == 5
     assert len(attempt) == 5
-    count_rl = [0] * 26
-    count_wl = [0] * 26
-    count_actual = [0] * 26
+    count_rl = [0] * 26       # count of right letters in the wrong position in `attempt`
+    count_wl = [0] * 26       # count of wrong letters in `attempt`
+    count_actual = [0] * 26   # count of letters in `word` not in the right position
     for i, (match, letter) in enumerate(attempt):
         if match == LetterMatch.RIGHT_LETTER_WRONG_POSITION:
             count_rl[letter_index(letter)] += 1
@@ -281,6 +280,9 @@ def possible_word(word: str, attempt: Attempt) -> bool:
 WORD_RE: Final = re.compile(r'^[a-z]{5}$')
 
 def read_words(filename: str, words: Words) -> None:
+    """
+    Update `words` with all the 5-letter words in `filename`
+    """
     with open(filename, 'rt') as fh:
         for word in fh:
             word = word.strip()
