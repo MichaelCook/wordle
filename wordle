@@ -238,14 +238,17 @@ def letter_index(letter: str) -> int:
 
 def parse_attempt(attempt: str) -> Attempt:
     ret: List[Letter] = []
-    while attempt:
-        letter = attempt[0]
-        attempt = attempt[1:]
+    remain = attempt
+    while remain:
+        letter = remain[0]
+        remain = remain[1:]
         if letter == '/':
-            letter = attempt[0].lower()
+            if not remain:
+                raise Exception(f'Invalid {attempt=}')
+            letter = remain[0].lower()
             if not ('a' <= letter <= 'z'):
                 raise Exception(f'Invalid {letter=} in {attempt=}')
-            attempt = attempt[1:]
+            remain = remain[1:]
             ret.append((LetterMatch.WRONG_LETTER, letter))
             continue
         if 'a' <= letter <= 'z':
@@ -322,11 +325,14 @@ def main() -> None:
 
     attempts = tuple(map(parse_attempt, OPTS.attempts))
 
-    # Show the scores of all attempts
+    # Show the scores of all attempts.  Also, make sure each attempt is
+    # actually a word in our dictionary
     if attempts:
         print('ATTEMPTED:')
         for attempt in attempts:
             word = ''.join(map(lambda x: x[1], attempt))
+            if word not in words:
+                LOGGER.warning('Not a valid word: %r', word)
             print(f'{word_score(word, position_letter_scores):5} {word}')
         print()
 
