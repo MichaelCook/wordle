@@ -25,6 +25,11 @@ options:
   --debug               Enable debug logging
 $
 $ ./wordle t/ea/s/e Ao/rt/a
+ATTEMPTED:
+ 1293 tease
+  786 aorta
+
+SUGGESTED: (7)
   874 aloft
   839 allot
   780 atoll
@@ -42,6 +47,7 @@ The ten best words to start with:
 
 ```
 $ ./wordle | head
+SUGGESTED: (2315)
  1437 slate
  1411 sauce
  1409 slice
