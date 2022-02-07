@@ -1,4 +1,5 @@
 # wordle
+
 Suggest guesses for Wordle.
 
 Specify what you've tried so far and this script tells you the best words to
@@ -6,7 +7,7 @@ try next.
 
 Example:
 
-```
+```shell
 $ ./wordle --help
 usage: wordle [-h] [--num-suggestions N] [--debug] [attempts ...]
 
@@ -43,9 +44,21 @@ $
 The number in the first column is the "score" for that word.
 A higher number means the word is more likely to be right.
 
+A word's score is calculated based on how often each letter appears in each of
+the five positions throughout the dictionary.  For example, for the word
+"slate":
+
+- There are 366 words with 's' in the 1st position
+- 201 with 'l' in the 2nd position
+- 307 with 'a' in 3rd
+- 139 with 't' in 4th
+- 424 with 'e' in 5th
+
+So "slate" gets a score of 1437 = 366 + 201 + 307 + 139 + 424.
+
 The ten best words to start with:
 
-```
+```shell
 $ ./wordle | head
 SUGGESTED: (2315)
  1437 slate
@@ -63,7 +76,7 @@ $
 
 A variant of the `wordle` script is `wordle-all`.
 
-```
+```shell
 $ ./wordle-all --help
 usage: wordle-all [-h] [--debug]
 
@@ -77,7 +90,7 @@ $
 
 We can see the three hardest words:
 
-```
+```shell
 $ ./wordle-all | sort -r | head -3
 8 hound = slate crony bound pound found mound wound hound
 8 hatch = slate taint carat batch patch match watch hatch
@@ -91,7 +104,7 @@ guesses.
 
 There are 19 words that take 7 guesses.
 
-```
+```shell
 $ ./wordle-all | grep -c ^7
 19
 $
