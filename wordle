@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
+import sys
+import os
 import argparse
 import re
+import logging
 from enum import Enum
 from typing import Final, Set, List, Tuple
 
@@ -8,6 +11,15 @@ from typing import Final, Set, List, Tuple
 
 parser = argparse.ArgumentParser(description="""
 Suggest Wordle guesses
+""")
+
+parser.add_argument('--num-suggestions', '-n', type=int, default=10,
+                    metavar='N', help="""
+Maximum number of suggestions to show (default: %(default)s)
+""")
+
+parser.add_argument('--debug', action='store_true', help="""
+Enable debug logging
 """)
 
 parser.add_argument('attempts', nargs='*', help="""
@@ -19,6 +31,10 @@ x - a lowercase letter is correct but in the wrong place,
 
 OPTS: Final = parser.parse_args()
 del parser
+
+logging.basicConfig(level=logging.DEBUG if OPTS.debug else logging.INFO,
+                    format='%(name)s: %(levelname)s: %(message)s')
+LOGGER: Final = logging.getLogger(os.path.basename(sys.argv[0]))
 
 # ----------------------------------------------------------------------------
 
@@ -291,7 +307,7 @@ def read_words(filename: str, words: Words) -> None:
 
 def main() -> None:
     words = WORDS
-    #print(f'[{len(words):4}] initial word list')
+    LOGGER.debug('[%4d] initial word list', len(words))
 
     # More words to consider
     #read_words('/usr/share/dict/words', words)
@@ -302,10 +318,17 @@ def main() -> None:
     for word in words:
         for i, letter in enumerate(word):
             position_letter_scores[i][letter_index(letter)] += 1
-    #print(f'{position_letter_scores=}')
+    LOGGER.debug('position_letter_scores=%r', position_letter_scores)
 
     attempts = tuple(map(parse_attempt, OPTS.attempts))
-    #print(f'{attempts=}')
+
+    # Show the scores of all attempts
+    if attempts:
+        print('ATTEMPTED:')
+        for attempt in attempts:
+            word = ''.join(map(lambda x: x[1], attempt))
+            print(f'{word_score(word, position_letter_scores):5} {word}')
+        print()
 
     # For all letters that are in the right position, remove all words that
     # don't have that letter in that position
@@ -317,7 +340,7 @@ def main() -> None:
                 rlrp[i] = letter
     pat_re = '^' + ''.join(rlrp) + '$'
     words = set(filter(re.compile(pat_re).match, words))
-    #print(f'[{len(words):4}] after rlrp filter on {pat_re!r}')
+    LOGGER.debug('[%4d] after rlrp filter on %r', len(words), pat_re)
 
     # For all letters that are in the wrong position, remove all words that do
     # have that letter in that position
@@ -328,7 +351,7 @@ def main() -> None:
                 rlwp[i].add(letter)
     pat_re = '^' + ''.join(map(lambda x: '[^' + ''.join(x) + ']' if x else '.', rlwp)) + '$'
     words = set(filter(re.compile(pat_re).match, words))
-    #print(f'[{len(words):4}] after rlwp filter on {pat_re!r}')
+    LOGGER.debug('[%4d] after rlwp filter on %r', len(words), pat_re)
 
     # Filter on remaining wrong letters
     words = set(word
@@ -336,8 +359,8 @@ def main() -> None:
                 if all(possible_word(word, attempt) for attempt in attempts))
 
     # Show the final list of words
-    #print(f'[{len(words):4}] final')
-    for word in sorted(words, reverse=True, key=lambda word: word_score(word, position_letter_scores))[:100]:
+    print(f'SUGGESTED: ({len(words)})')
+    for word in sorted(words, key=lambda word: -word_score(word, position_letter_scores))[:OPTS.num_suggestions]:
         print(f'{word_score(word, position_letter_scores):5} {word}')
 
 main()

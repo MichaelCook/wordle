@@ -8,17 +8,21 @@ Example:
 
 ```
 $ ./wordle --help
-usage: wordle [-h] [attempts ...]
+usage: wordle [-h] [--num-suggestions N] [--debug] [attempts ...]
 
 Suggest Wordle guesses
 
 positional arguments:
-  attempts    For each attempt: X - an uppercase letter is correct and in the
-              right place, x - a lowercase letter is correct but in the wrong
-              place, /x - letter is not in the solution
+  attempts              For each attempt: X - an uppercase letter is correct
+                        and in the right place, x - a lowercase letter is
+                        correct but in the wrong place, /x - letter is not in
+                        the solution
 
 options:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
+  --num-suggestions N, -n N
+                        Maximum number of suggestions to show (default: 10)
+  --debug               Enable debug logging
 $
 $ ./wordle t/ea/s/e Ao/rt/a
   874 aloft
