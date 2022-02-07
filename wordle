@@ -5,7 +5,7 @@ import argparse
 import re
 import logging
 from enum import Enum
-from typing import Final, Set, List, Tuple
+from typing import Final, Set, List, Tuple, Dict
 
 # ----------------------------------------------------------------------------
 
@@ -266,6 +266,17 @@ def word_score(word: str, position_letter_scores: List[List[int]]) -> int:
     return sum(position_letter_scores[i][letter_index(letter)]
                for i, letter in enumerate(word))
 
+def make_word_scores(words: Words) -> Dict[str, int]:
+    # position_letter_scores[i][j] is the number of times
+    # letter j=0..25 appears in position i=0..4 in the full word list
+    position_letter_scores = [[0] * 26 for _ in range(5)]
+    for word in words:
+        for i, letter in enumerate(word):
+            position_letter_scores[i][letter_index(letter)] += 1
+    LOGGER.debug('position_letter_scores=%r', position_letter_scores)
+
+    return {word: word_score(word, position_letter_scores) for word in words}
+
 def possible_word(word: str, attempt: Attempt) -> bool:
     debug = word == 'zzzzz'   # the word whose analysis to debug
     assert len(word) == 5
@@ -296,32 +307,11 @@ def possible_word(word: str, attempt: Attempt) -> bool:
     if debug: print('True')
     return True
 
-WORD_RE: Final = re.compile(r'^[a-z]{5}$')
-
-def read_words(filename: str, words: Words) -> None:
-    """
-    Update `words` with all the 5-letter words in `filename`
-    """
-    with open(filename, 'rt') as fh:
-        for word in fh:
-            word = word.strip()
-            if WORD_RE.match(word):
-                words.add(word)
-
 def main() -> None:
     words = WORDS
     LOGGER.debug('[%4d] initial word list', len(words))
 
-    # More words to consider
-    #read_words('/usr/share/dict/words', words)
-
-    # position_letter_scores[i][j] is the number of times
-    # letter j=0..25 appears in position i=0..4 in the full word list
-    position_letter_scores = [[0] * 26 for _ in range(5)]
-    for word in words:
-        for i, letter in enumerate(word):
-            position_letter_scores[i][letter_index(letter)] += 1
-    LOGGER.debug('position_letter_scores=%r', position_letter_scores)
+    word_scores = make_word_scores(words)
 
     attempts = tuple(map(parse_attempt, OPTS.attempts))
 
@@ -331,9 +321,10 @@ def main() -> None:
         print('ATTEMPTED:')
         for attempt in attempts:
             word = ''.join(map(lambda x: x[1], attempt))
-            if word not in words:
+            try:
+                print(f'{word_scores[word]:5} {word}')
+            except KeyError:
                 LOGGER.warning('Not a valid word: %r', word)
-            print(f'{word_score(word, position_letter_scores):5} {word}')
         print()
 
     # For all letters that are in the right position, remove all words that
@@ -366,7 +357,7 @@ def main() -> None:
 
     # Show the final list of words
     print(f'SUGGESTED: ({len(words)})')
-    for word in sorted(words, key=lambda word: -word_score(word, position_letter_scores))[:OPTS.num_suggestions]:
-        print(f'{word_score(word, position_letter_scores):5} {word}')
+    for word in sorted(words, key=lambda word: -word_scores[word])[:OPTS.num_suggestions]:
+        print(f'{word_scores[word]:5} {word}')
 
 main()
