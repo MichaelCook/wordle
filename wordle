@@ -266,6 +266,9 @@ def word_score(word: str, position_letter_scores: List[List[int]]) -> int:
     return sum(position_letter_scores[i][letter_index(letter)]
                for i, letter in enumerate(word))
 
+def word_from_attempt(attempt: Attempt) -> str:
+    return ''.join(x[1] for x in attempt)
+
 def make_word_scores(words: Words) -> Dict[str, int]:
     # position_letter_scores[i][j] is the number of times
     # letter j=0..25 appears in position i=0..4 in the full word list
@@ -320,7 +323,7 @@ def main() -> None:
     if attempts:
         print('ATTEMPTED:')
         for attempt in attempts:
-            word = ''.join(map(lambda x: x[1], attempt))
+            word = word_from_attempt(attempt)
             try:
                 print(f'{word_scores[word]:5} {word}')
             except KeyError:
