@@ -9,7 +9,7 @@ Example:
 
 ```shell
 $ ./wordle --help
-usage: wordle [-h] [--num-suggestions N] [--debug] [attempts ...]
+usage: wordle [-h] [--num-suggestions N] [--all] [--debug] [attempts ...]
 
 Suggest Wordle guesses
 
@@ -23,6 +23,8 @@ options:
   -h, --help            show this help message and exit
   --num-suggestions N, -n N
                         Maximum number of suggestions to show (default: 10)
+  --all, -a             For each word in the Wordle dictionary, show the best
+                        series of guesses
   --debug               Enable debug logging
 $
 $ ./wordle t/ea/s/e Ao/rt/a
@@ -74,24 +76,12 @@ SUGGESTED: (2315)
 $
 ```
 
-A variant of the `wordle` script is `wordle-all`.
-
-```shell
-$ ./wordle-all --help
-usage: wordle-all [-h] [--debug]
-
-For each word in the Wordle dictionary, show the best series of guesses
-
-options:
-  -h, --help  show this help message and exit
-  --debug     Enable debug logging
-$
-```
+With the `--all` option, the script analyzes the whole dictionary.
 
 We can see the three hardest words:
 
 ```shell
-$ ./wordle-all | sort -r | head -3
+$ ./wordle --all | sort -r | head -3
 8 hound = slate crony bound pound found mound wound hound
 8 hatch = slate taint carat batch patch match watch hatch
 8 graze = slate crane brake frame grade grape grave graze
@@ -105,7 +95,7 @@ guesses.
 There are 19 words that take 7 guesses.
 
 ```shell
-$ ./wordle-all | grep -c ^7
+$ ./wordle --all | grep -c ^7
 19
 $
 ```
