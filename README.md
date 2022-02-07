@@ -54,3 +54,39 @@ $ ./wordle | head
  1378 crane
 $
 ```
+
+A variant of the `wordle` script is `wordle-all`.
+
+```
+$ ./wordle-all --help
+usage: wordle-all [-h] [--debug]
+
+For each word in the Wordle dictionary, show the best series of guesses
+
+options:
+  -h, --help  show this help message and exit
+  --debug     Enable debug logging
+$
+```
+
+We can see the three hardest words:
+
+```
+$ ./wordle-all | sort -r | head -3
+8 hound = slate crony bound pound found mound wound hound
+8 hatch = slate taint carat batch patch match watch hatch
+8 graze = slate crane brake frame grade grape grave graze
+$
+```
+
+Each of these words (hound, hatch and grace) would take 8 guesses if you
+guessed the word most likely to match each time.  But of course you only get 6
+guesses.
+
+There are 19 words that take 7 guesses.
+
+```
+$ ./wordle-all | grep -c ^7
+19
+$
+```
