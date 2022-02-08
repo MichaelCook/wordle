@@ -88,7 +88,7 @@ $ ./wordle --all | sort -r | head -3
 $
 ```
 
-Each of these words (hound, hatch and grace) would take 8 guesses if you
+Each of these words (hound, hatch and graze) would take 8 guesses if you
 guessed the word most likely to match each time.  But of course you only get 6
 guesses.
 
