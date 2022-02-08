@@ -99,3 +99,11 @@ $ ./wordle --all | grep -c ^7
 19
 $
 ```
+
+With this scoring algorithm, we can expect 3.8 guesses on average.
+
+```shell
+$ wordle --all | awk '{s+=$1} END{print s/NR}'
+3.82333
+$
+```
