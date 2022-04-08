@@ -332,12 +332,15 @@ def possible_word(word: str, attempt: Attempt) -> bool:
         print(f'{count_actual=}')
     for i in range(26):
         if count_actual[i] < count_rl[i]:
-            if debug: print('False')
+            if debug:
+                print('False')
             return False
         if count_wl[i] != 0 and count_actual[i] > count_rl[i]:
-            if debug: print('False')
+            if debug:
+                print('False')
             return False
-    if debug: print('True')
+    if debug:
+        print('True')
     return True
 
 def get_suggestions(attempts: List[Attempt], word_scores: Dict[str, int]) -> List[str]:
